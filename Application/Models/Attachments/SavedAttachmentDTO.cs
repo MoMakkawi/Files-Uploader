@@ -1,6 +1,6 @@
 ﻿using Domain.Enums;
 
-namespace Application.Models;
+namespace Application.Models.Attachments;
 
 public record SavedAttachmentResponse(
     string OriginalName,

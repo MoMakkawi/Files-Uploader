@@ -1,6 +1,6 @@
 ﻿using Domain.Security;
 
-namespace Application.Models;
+namespace Application.Models.Security;
 
 public class AuthenticationResponse
 {
