@@ -1,5 +1,4 @@
-﻿using Application.Models;
-
+﻿using Application.Models.Security;
 using Domain.Security;
 
 namespace Application.Services;
