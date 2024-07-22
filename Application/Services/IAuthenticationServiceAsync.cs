@@ -4,7 +4,7 @@ using Domain.Security;
 
 namespace Application.Services;
 
-internal interface IAuthenticationServiceAsync
+public interface IAuthenticationServiceAsync
 {
     TokenData GenerateToken(string userName);
     TokenData GenerateRefreshToken(string accessToken);

@@ -1,13 +1,14 @@
-﻿using Domain.Entities;
+﻿using Application.Models;
+
+using Domain.Identities;
 
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Services;
 
-internal interface IAttachmentServiceAsync
+public interface IAttachmentServiceAsync
 {
-    Task<Attachment[]> SaveAsync(string username, IFormFileCollection? attachmentFiles);
-    Task<bool> DeleteAsync(string username, IFormFile attachmentFile);
-    Task<Attachment[]> GetUserAttachmentsAsync(string userName);
+    Task<IEnumerable<SavedAttachmentResponse>> SaveAsync(User user, IFormFileCollection? attachmentFiles);
+    Task<bool> DeleteAsync(string userName, IFormFile attachmentFile);
     Task<string> GetAsBase64Async(string path);
 }
