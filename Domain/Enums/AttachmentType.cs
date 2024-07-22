@@ -1,6 +1,6 @@
 ﻿namespace Domain.Enums;
 
-internal enum AttachmentType
+public enum AttachmentType
 {
     Image,
     Document,

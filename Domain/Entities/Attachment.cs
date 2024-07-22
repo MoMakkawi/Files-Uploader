@@ -2,7 +2,7 @@
 
 namespace Domain.Entities;
 
-internal class Attachment
+public class Attachment
 {
     public Guid Id { get; set; }
     public required string OriginalName { get; set; }
