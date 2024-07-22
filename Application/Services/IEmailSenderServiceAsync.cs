@@ -1,7 +1,6 @@
-﻿
-using Application.Email;
+﻿using Application.Email;
 
-namespace Application.Contracts;
+namespace Application.Services;
 
 public interface IEmailSenderServiceAsync
 {
