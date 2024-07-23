@@ -40,4 +40,11 @@ public class UserRepositoryAsync(MySQLDBContext dbContext)
 
         return Task.FromResult(username);
     }
+
+    public async Task<User> GetLoginUserAsync(HttpContext httpContext)
+    {
+        var userName = await GetUserNameAsync(httpContext);
+        var user = await GetByUserNameAsync(userName);
+        return user!;
+    }
 }
