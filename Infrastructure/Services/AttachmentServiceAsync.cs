@@ -1,4 +1,6 @@
-﻿using Application.Contracts;
+﻿using System.IO;
+
+using Application.Contracts;
 using Application.Helper;
 using Application.Models.Attachments;
 using Application.Services;
@@ -6,6 +8,8 @@ using Application.Services;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Identities;
+
+using Microsoft.EntityFrameworkCore;
 
 using Persistence.Data;
 
@@ -33,14 +37,21 @@ public class AttachmentServiceAsync(IUserRepositoryAsync userRepositoryAsync, My
         return Task.CompletedTask;
     }
 
-    public Task<string> GetAsBase64Async(string path)
+
+
+    public async Task<string?> GetAsBase64Async(string attachmentUniqueName)
     {
-        var pathBytes = File.ReadAllBytes(path);
-        var pathBase64 = Convert.ToBase64String(pathBytes);
+        var attachment = await context
+            .Attachments
+            .FirstOrDefaultAsync(attachment => attachment.UniqueName == attachmentUniqueName);
 
-        return Task.FromResult(pathBase64);
+        if (attachment is null) return null;
+
+        var attachmentBytes = File.ReadAllBytes(attachment!.Path);
+        var attachmentBase64 = Convert.ToBase64String(attachmentBytes);
+
+        return attachmentBase64;
     }
-
 
     public async Task<IEnumerable<Attachment>> SaveAsync(User user, List<SaveAttachmentCommand>? attachmentFiles)
     {
