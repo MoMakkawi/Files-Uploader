@@ -76,7 +76,8 @@ public static class Setup
     {
         var connectionString = builder.Configuration.GetConnectionString("MySQLConnectionString");
         builder.Services.AddDbContext<MySQLDBContext>(
-            options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+            options => options.UseLazyLoadingProxies()
+            .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
     }
     private static void AddBackgroundServiceDBConfiguration(this WebApplicationBuilder builder)
     {
