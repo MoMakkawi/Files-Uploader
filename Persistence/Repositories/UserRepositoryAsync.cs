@@ -11,7 +11,7 @@ using Domain.Entities;
 namespace Persistence.Services.Repositories;
 
 public class UserRepositoryAsync(MySQLDBContext dbContext)
-        : GenericRepository<User>(dbContext), IUserRepositoryAsync
+        : GenericRepositoryAsync<User>(dbContext), IUserRepositoryAsync
 {
 
     public async Task<List<string>> GetHasNotFirstLoginUsersEmailsAsync()

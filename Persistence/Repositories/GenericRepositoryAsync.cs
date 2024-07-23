@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Persistence.Data;
 namespace Persistence.Services.Repositories;
 
-public class GenericRepository<T>(MySQLDBContext dbContext) : IGenericRepositoryAsync<T> where T : class
+public class GenericRepositoryAsync<T>(MySQLDBContext dbContext) : IGenericRepositoryAsync<T> where T : class
 {
     public async Task<T> CreateAsync(T entity)
     {
