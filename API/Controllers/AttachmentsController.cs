@@ -28,10 +28,10 @@ public class AttachmentsController(
     }
 
     [HttpGet("base64")]
-    public async Task<ActionResult<string>> GetImageAsBase64Async(string uniqueName)
+    public async Task<ActionResult<string>> GetAttachmentAsBase64Async(string uniqueName)
         => await attachmentServiceAsync.GetAsBase64Async(uniqueName) 
-            is string imageAsBase64
-            ? Ok(imageAsBase64)
+            is string attachmentAsBase64
+            ? Ok(attachmentAsBase64)
             : BadRequest($"There no attachment have this name : {uniqueName}");
 
     [HttpGet("login-user")]
