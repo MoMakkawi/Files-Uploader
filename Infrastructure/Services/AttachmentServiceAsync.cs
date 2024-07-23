@@ -40,18 +40,10 @@ public class AttachmentServiceAsync(IUserRepositoryAsync userRepositoryAsync, My
 
 
     public async Task<string?> GetAsBase64Async(string attachmentUniqueName)
-    {
-        var attachment = await context
-            .Attachments
-            .FirstOrDefaultAsync(attachment => attachment.UniqueName == attachmentUniqueName);
+        => await context.Attachments
+            .FirstOrDefaultAsync(attachment => attachment.UniqueName == attachmentUniqueName)
+            is Attachment attachment ? AttachmentHelper.GetAsBase64(attachment!.Path) : null;
 
-        if (attachment is null) return null;
-
-        var attachmentBytes = File.ReadAllBytes(attachment!.Path);
-        var attachmentBase64 = Convert.ToBase64String(attachmentBytes);
-
-        return attachmentBase64;
-    }
 
     public async Task<IEnumerable<Attachment>> SaveAsync(User user, List<SaveAttachmentCommand>? attachmentFiles)
     {
