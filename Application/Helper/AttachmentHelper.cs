@@ -15,4 +15,12 @@ public static class AttachmentHelper
             .Where(IsNotValidFile)
             .Select(attachmentFile => attachmentFile.Attachment.FileName)
             .ToArray();
+
+    public static string GetAsBase64(string path)
+    {
+        var attachmentBytes = File.ReadAllBytes(path);
+        var attachmentBase64 = Convert.ToBase64String(attachmentBytes);
+
+        return attachmentBase64;
+    }
 }
