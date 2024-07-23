@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Application.Services;
 using Application.Models.Attachments;
 using AutoMapper;
+using Application.Helper;
 
 namespace API.Controllers;
 
@@ -33,4 +34,19 @@ public class AttachmentsController(
             ? Ok(imageAsBase64)
             : BadRequest($"There no attachment have this name : {uniqueName}");
 
+    [HttpGet("login-user")]
+    public async Task<ActionResult<IEnumerable<AttachmentWithBase64DTO>>> GetAttachmentsAsBase64Async()
+    {
+        var user = await userRepositoryAsync.GetLoginUserAsync(HttpContext);
+
+        var attachmentsWithBase64 = user.Attachments
+            .Select(attachment =>
+            {
+                var attachmentWithBase64DTO = mapper.Map<AttachmentWithBase64DTO>(attachment);
+                attachmentWithBase64DTO.Base64 = AttachmentHelper.GetAsBase64(attachment.Path);
+                return attachmentWithBase64DTO;
+            });
+
+        return Ok(attachmentsWithBase64);
+    }
 }
