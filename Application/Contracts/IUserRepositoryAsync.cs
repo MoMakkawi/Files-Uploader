@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Contracts;
 
-public interface IUserRepositoryAsync : IGenericRepository<User>
+public interface IUserRepositoryAsync : IGenericRepositoryAsync<User>
 {
     Task<User?> GetByUserNameAsync(string userName);
     Task<string> GetUserNameAsync(HttpContext httpContext);
