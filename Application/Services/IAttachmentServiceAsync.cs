@@ -1,13 +1,13 @@
 ﻿using Application.Models.Attachments;
-using Domain.Identities;
 
-using Microsoft.AspNetCore.Http;
+using Domain.Entities;
+using Domain.Identities;
 
 namespace Application.Services;
 
 public interface IAttachmentServiceAsync
 {
-    Task<IEnumerable<SavedAttachmentResponse>> SaveAsync(User user, IFormFileCollection? attachmentFiles);
-    Task<bool> DeleteAsync(string userName, IFormFile attachmentFile);
+    Task<IEnumerable<Attachment>> SaveAsync(User user, List<SaveAttachmentCommand>? attachmentFiles);
+    Task DeleteAsync(User user, string attachmentOriginalName);
     Task<string> GetAsBase64Async(string path);
 }
