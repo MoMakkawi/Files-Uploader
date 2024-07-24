@@ -4,6 +4,7 @@ namespace Application.Models.Attachments;
 
 public class AttachmentWithBase64DTO
 {
+    public Guid Id { get; set; }
     public required string OriginalName { get; set; }
     public required string UniqueName { get; set; }
     public required string Extension { get; set; }
