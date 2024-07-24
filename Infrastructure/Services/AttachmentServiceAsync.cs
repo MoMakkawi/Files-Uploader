@@ -18,8 +18,8 @@ public class AttachmentServiceAsync(IUserRepositoryAsync userRepositoryAsync, IA
 
     private readonly Func<string, string> GetFullUserFolderPath = (username) => Path.Combine(usersAttachmentsFolderPath, username);
 
-    private readonly Func<string, AttachmentType, string, string> GenerateFullAttachmentPath = (username, attachmentType, uniqueName)
-        => Path.Combine(usersAttachmentsFolderPath, username, nameof(attachmentType), uniqueName);
+    private readonly Func<string, AttachmentType, string, string, string> GenerateFullAttachmentPath = (username, attachmentType, uniqueName, extension)
+        => Path.Combine(usersAttachmentsFolderPath, username, attachmentType.ToString(), uniqueName + extension);
 
     public async Task DeleteAsync(User user, string attachmentUniqueName)
     {
@@ -28,7 +28,9 @@ public class AttachmentServiceAsync(IUserRepositoryAsync userRepositoryAsync, IA
 
         if (userAttachment is null) return;
 
-        await attachmentRepositoryAsync.DeleteAsync(userAttachment.Id);
+        userAttachment.IsDeleted = true;
+        await attachmentRepositoryAsync.UpdateAsync(userAttachment);
+
         File.Delete(userAttachment.Path);
     }
 
@@ -47,10 +49,11 @@ public class AttachmentServiceAsync(IUserRepositoryAsync userRepositoryAsync, IA
         if (attachmentFiles is null) return [];
 
         if (attachmentFiles.GetInvalidFilesNames() is string[] invalidFilesNames && invalidFilesNames.Length is not 0)
-            throw new ArgumentException("Those files are not an images, allowed images only : " + string.Join(", ", invalidFilesNames));
+            throw new ArgumentException("Those files are invalid because they did not have match there attachment type only : " + string.Join(", ", invalidFilesNames));
 
-        if (!Directory.Exists(GetFullUserFolderPath(user.UserName)))
-            Directory.CreateDirectory(GetFullUserFolderPath(user.UserName));
+        foreach (var attachmentType in Enum.GetValues<AttachmentType>())
+            if (!Directory.Exists(Path.Combine(GetFullUserFolderPath(user.UserName), attachmentType.ToString())))
+                Directory.CreateDirectory(Path.Combine(GetFullUserFolderPath(user.UserName), attachmentType.ToString()));
 
         var saveTasks = attachmentFiles
             .Select(async attachmentFile => await SaveAttachmentAsync(user, attachmentFile));
@@ -69,7 +72,7 @@ public class AttachmentServiceAsync(IUserRepositoryAsync userRepositoryAsync, IA
             UniqueName = uniqueName,
             Extension = extension,
             Type = type,
-            Path = GenerateFullAttachmentPath(user.UserName, type, uniqueName)
+            Path = GenerateFullAttachmentPath(user.UserName, type, uniqueName, extension)
         };
 
         using var stream = new FileStream(attachment.Path, FileMode.Create);
