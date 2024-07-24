@@ -1,4 +1,5 @@
-﻿using Application.Models.Attachments;
+﻿using Application.Helper;
+using Application.Models.Attachments;
 
 using AutoMapper;
 
@@ -10,7 +11,11 @@ public class AttachmentProfile : Profile
 {
     public AttachmentProfile()
     {
-        CreateMap<Attachment, AttachmentDTO>()
-            .ReverseMap();
+        CreateMap<Attachment, AttachmentDTO>();
+
+        CreateMap<Attachment, AttachmentWithBase64DTO>()
+            .ForMember(
+            dest => dest.Base64,
+            opt => opt.MapFrom(src => AttachmentHelper.GetAsBase64(src.Path)));
     }
 }
