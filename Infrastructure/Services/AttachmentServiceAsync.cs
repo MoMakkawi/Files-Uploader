@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-using Application.Contracts;
+﻿using Application.Contracts;
 using Application.Helper;
 using Application.Models.Attachments;
 using Application.Services;
@@ -9,14 +7,10 @@ using Domain.Entities;
 using Domain.Enums;
 using Domain.Identities;
 
-using Microsoft.EntityFrameworkCore;
-
-using Persistence.Data;
-
 
 namespace Infrastructure.Services;
 
-public class AttachmentServiceAsync(IUserRepositoryAsync userRepositoryAsync, MySQLDBContext context) : IAttachmentServiceAsync
+public class AttachmentServiceAsync(IUserRepositoryAsync userRepositoryAsync, IAttachmentRepositoryAsync attachmentRepositoryAsync) : IAttachmentServiceAsync
 {
     private static readonly string usersAttachmentsFolderPath = Path.Combine(
       Directory.GetParent(Directory.GetCurrentDirectory()!)!.FullName,
@@ -27,22 +21,25 @@ public class AttachmentServiceAsync(IUserRepositoryAsync userRepositoryAsync, My
     private readonly Func<string, AttachmentType, string, string> GenerateFullAttachmentPath = (username, attachmentType, uniqueName)
         => Path.Combine(usersAttachmentsFolderPath, username, nameof(attachmentType), uniqueName);
 
-    public Task DeleteAsync(User user, string attachmentOriginalName)
+    public async Task DeleteAsync(User user, string attachmentUniqueName)
     {
-        if (user.Attachments.FirstOrDefault(attachment => attachment.OriginalName == attachmentOriginalName) is Attachment attachment)
-        {
-            File.Delete(attachment.Path);
-            context.Attachments.Remove(attachment);
-        }
-        return Task.CompletedTask;
+        var userAttachment = user.Attachments
+            .FirstOrDefault(attachment => attachment.UniqueName == attachmentUniqueName);
+
+        if (userAttachment is null) return;
+
+        await attachmentRepositoryAsync.DeleteAsync(userAttachment.Id);
+        File.Delete(userAttachment.Path);
     }
 
 
 
     public async Task<string?> GetAsBase64Async(string attachmentUniqueName)
-        => await context.Attachments
-            .FirstOrDefaultAsync(attachment => attachment.UniqueName == attachmentUniqueName)
-            is Attachment attachment ? AttachmentHelper.GetAsBase64(attachment!.Path) : null;
+    {
+        var attachmentList = await attachmentRepositoryAsync.GetListAsync();
+        var attachment = attachmentList.FirstOrDefault(attachment => attachment.UniqueName == attachmentUniqueName);
+        return attachment is null ? null : AttachmentHelper.GetAsBase64(attachment!.Path);
+    }
 
 
     public async Task<IEnumerable<Attachment>> SaveAsync(User user, List<SaveAttachmentCommand>? attachmentFiles)
@@ -56,15 +53,15 @@ public class AttachmentServiceAsync(IUserRepositoryAsync userRepositoryAsync, My
             Directory.CreateDirectory(GetFullUserFolderPath(user.UserName));
 
         var saveTasks = attachmentFiles
-            .Select(async attachmentFile => await SaveImageAsync(user, attachmentFile));
+            .Select(async attachmentFile => await SaveAttachmentAsync(user, attachmentFile));
 
         return await Task.WhenAll(saveTasks);
     }
-    private async Task<Attachment> SaveImageAsync(User user, SaveAttachmentCommand attachmentFile)
+    private async Task<Attachment> SaveAttachmentAsync(User user, SaveAttachmentCommand attachmentFile)
     {
         var extension = Path.GetExtension(attachmentFile.Attachment.FileName);
         var type = attachmentFile.Type;
-        var uniqueName = Guid.NewGuid().ToString() + extension;
+        var uniqueName = Guid.NewGuid().ToString();
 
         var attachment = new Attachment()
         {
