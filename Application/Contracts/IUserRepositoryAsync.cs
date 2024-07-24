@@ -11,5 +11,4 @@ public interface IUserRepositoryAsync : IGenericRepositoryAsync<User>
     Task<string> GetUserNameAsync(HttpContext httpContext);
     Task<User> GetLoginUserAsync(HttpContext httpContext);
     Task<List<string>> GetHasNotFirstLoginUsersEmailsAsync();
-    Task<IEnumerable<Attachment>> GetUserAttachmentsAsync(string userName);
 }

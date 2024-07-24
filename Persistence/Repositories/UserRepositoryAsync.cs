@@ -24,14 +24,6 @@ public class UserRepositoryAsync(MySQLDBContext dbContext)
         => await dbContext.Users
         .FirstOrDefaultAsync(u => u.UserName == userName);
 
-    public async Task<IEnumerable<Attachment>> GetUserAttachmentsAsync(string userName)
-    {
-        var user = await GetByUserNameAsync(userName);
-
-        return user!.Attachments;
-    }
-        
-
     public Task<string> GetUserNameAsync(HttpContext httpContext)
     {
         var username = (httpContext.User.Identity as ClaimsIdentity)?
