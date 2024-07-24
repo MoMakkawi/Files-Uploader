@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 using Persistence.Data;
+using Persistence.Repositories;
 using Persistence.Services.Repositories;
 
 
@@ -34,6 +35,7 @@ public static class Setup
         builder.Services.AddScoped(typeof(IGenericRepositoryAsync<>), typeof(GenericRepositoryAsync<>));
         builder.Services.AddScoped<IUserRepositoryAsync, UserRepositoryAsync>();
 
+        builder.Services.AddScoped<IAttachmentRepositoryAsync, AttachmentRepositoryAsync>();
         builder.Services.AddScoped<IAttachmentServiceAsync, AttachmentServiceAsync>();
         
         builder.Services.AddScoped<IAuthenticationServiceAsync, AuthenticationServiceAsync>();
