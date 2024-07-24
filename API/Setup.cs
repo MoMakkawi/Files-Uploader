@@ -48,7 +48,7 @@ public static class Setup
 
         return builder;
     }
-    public static void AddBackgroundServices(this WebApplicationBuilder builder)
+    public static void AddBackgroundServices()
     {
         RecurringJob.AddOrUpdate<RemainderEmailService>(
         "send-remainders-emails-to-HasNotFirstLoginUsers",

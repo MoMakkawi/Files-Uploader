@@ -21,3 +21,5 @@ app.UseHangfireDashboard()
 app.MapControllers();
 
 app.Run();
+
+Setup.AddBackgroundServices();
