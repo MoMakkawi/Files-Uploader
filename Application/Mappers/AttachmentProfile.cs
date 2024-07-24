@@ -1,8 +1,8 @@
-﻿using System.Net.Mail;
-
-using Application.Models.Attachments;
+﻿using Application.Models.Attachments;
 
 using AutoMapper;
+
+using Domain.Entities;
 
 namespace Application.Mappers;
 
