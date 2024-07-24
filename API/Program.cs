@@ -6,8 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.AddConfigurations();
-builder.AddServices();
+builder
+    .AddConfigurations()
+    .AddServices();
 
 var app = builder.Build();
 

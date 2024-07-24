@@ -1,11 +1,5 @@
-﻿using System.Text;
-
-using Application.Contracts;
-using Application.Mappers;
+﻿using Application.Contracts;
 using Application.Services;
-
-using AutoMapper;
-
 
 using Hangfire;
 using Hangfire.MySql;
@@ -22,12 +16,13 @@ using Persistence.Data;
 using Persistence.Repositories;
 using Persistence.Services.Repositories;
 
+using System.Text;
 
 namespace API;
 
 public static class Setup
 {
-    public static void AddServices(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddAutoMapperService();
         builder.Services.AddHangFireServices();
@@ -37,35 +32,34 @@ public static class Setup
 
         builder.Services.AddScoped<IAttachmentRepositoryAsync, AttachmentRepositoryAsync>();
         builder.Services.AddScoped<IAttachmentServiceAsync, AttachmentServiceAsync>();
-        
+
         builder.Services.AddScoped<IAuthenticationServiceAsync, AuthenticationServiceAsync>();
         builder.Services.AddScoped<IEmailSenderServiceAsync, EmailSenderServiceAsync>();
+
+        return builder;
     }
 
-    public static void AddConfigurations(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddConfigurations(this WebApplicationBuilder builder)
     {
         builder.AddAuthenticationConfigurations();
         builder.AddDBConfiguration();
         builder.AddBackgroundServiceDBConfiguration();
         builder.AddEmailConfiguration();
+
+        return builder;
     }
-    public static void AddBackgroundServices()
+    public static void AddBackgroundServices(this WebApplicationBuilder builder)
     {
         RecurringJob.AddOrUpdate<RemainderEmailService>(
         "send-remainders-emails-to-HasNotFirstLoginUsers",
         service => service.SendForHasNotLoginUsersBeforeAsync(),
         Cron.Daily(17, 0) // Run every day at 5:00 PM (17:00)
-    );
+        );
     }
 
     #region Services
     private static void AddAutoMapperService(this IServiceCollection services)
-        => new List<IMapper>
-        {
-            new MapperConfiguration(mc => mc.AddProfile(new UserProfile())).CreateMapper(),
-            new MapperConfiguration(mc => mc.AddProfile(new AttachmentProfile())).CreateMapper()
-        }
-        .ForEach(mapper => services.AddSingleton(mapper));
+        => services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
     private static void AddHangFireServices(this IServiceCollection services)
     {
