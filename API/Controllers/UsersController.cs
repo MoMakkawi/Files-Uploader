@@ -77,7 +77,6 @@ public class UsersController(
         if (existUser is not null) return BadRequest($"There an user have this username : {registerCommand.UserName}");
 
         var user = mapper.Map<User>(registerCommand);
-
         var addedUser = await userRepositoryAsync.CreateAsync(user);
 
         await attachmentServiceAsync.SaveAsync(addedUser, registerCommand.Attachments);

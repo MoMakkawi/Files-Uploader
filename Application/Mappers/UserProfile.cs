@@ -10,7 +10,8 @@ public class UserProfile : Profile
 {
     public UserProfile()
     {
-        CreateMap<RegisterCommand, User>();
+        CreateMap<RegisterCommand, User>()
+            .ForMember(dest => dest.Attachments, opt => opt.Ignore()); ;
 
         CreateMap<User, UserDTO>()
             .ForMember(
