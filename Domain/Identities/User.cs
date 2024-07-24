@@ -12,5 +12,5 @@ public class User
     public required string Password { get; set; }
     public bool HasFirstLogin { get; set; }
 
-    public ICollection<Attachment> Attachments { get; set; } = [];
+    public virtual ICollection<Attachment> Attachments { get; set; } = [];
 }
