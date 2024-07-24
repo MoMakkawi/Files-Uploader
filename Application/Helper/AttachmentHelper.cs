@@ -6,7 +6,7 @@ namespace Application.Helper;
 public static class AttachmentHelper
 {
     private static Func<SaveAttachmentCommand, bool> IsNotValidFile = (saveAttachment)
-    => (saveAttachment.Type is AttachmentType.Image && !saveAttachment.Attachment.ContentType.StartsWith("Image"))
+    => (saveAttachment.Type is AttachmentType.Image && !saveAttachment.Attachment.ContentType.StartsWith("image"))
     || (saveAttachment.Type is AttachmentType.Passport && !saveAttachment.Attachment.ContentType.EndsWith("pdf"))
     || saveAttachment.Type is AttachmentType.Document;
 
