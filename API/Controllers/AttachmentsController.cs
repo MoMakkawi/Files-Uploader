@@ -5,15 +5,17 @@ using Microsoft.AspNetCore.Mvc;
 using Application.Services;
 using Application.Models.Attachments;
 using AutoMapper;
-using Application.Helper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class AttachmentsController(
     IMapper mapper,
     IAttachmentServiceAsync attachmentServiceAsync,
+    IAttachmentRepositoryAsync attachmentRepositoryAsync,
     IUserRepositoryAsync userRepositoryAsync) 
     : ControllerBase
 {
@@ -35,18 +37,29 @@ public class AttachmentsController(
             : BadRequest($"There no attachment have this name : {uniqueName}");
 
     [HttpGet("login-user")]
-    public async Task<ActionResult<IEnumerable<AttachmentWithBase64DTO>>> GetAttachmentsAsBase64Async()
+    public async Task<ActionResult<IEnumerable<AttachmentWithBase64DTO>>> GetLoginUserAttachmentsAsBase64Async()
     {
         var user = await userRepositoryAsync.GetLoginUserAsync(HttpContext);
-
-        var attachmentsWithBase64 = user.Attachments
-            .Select(attachment =>
-            {
-                var attachmentWithBase64DTO = mapper.Map<AttachmentWithBase64DTO>(attachment);
-                attachmentWithBase64DTO.Base64 = AttachmentHelper.GetAsBase64(attachment.Path);
-                return attachmentWithBase64DTO;
-            });
-
+        var attachmentsWithBase64 = mapper.Map<IEnumerable<AttachmentWithBase64DTO>>(user.Attachments.AsEnumerable());
         return Ok(attachmentsWithBase64);
     }
+
+    [HttpGet("user-id")]
+    public async Task<ActionResult<IEnumerable<AttachmentWithBase64DTO>>> GetAttachmentsWithBase64ByUserIdAsync(Guid userId)
+    {
+        var user = await userRepositoryAsync.GetByIdAsync(userId);
+        if (user is null) return BadRequest($"User by Id : {userId} is not exist.");
+        var attachmentsWithBase64 = mapper.Map<IEnumerable<AttachmentWithBase64DTO>>(user.Attachments.AsEnumerable());
+        return Ok(attachmentsWithBase64);
+    }
+
+    [HttpGet("id")]
+    public async Task<ActionResult<AttachmentWithBase64DTO>> GetAttachmentWithBase64ByIdAsync(Guid id)
+    {
+        var attachment = await attachmentRepositoryAsync.GetByIdAsync(id);
+        if (attachment is null) return BadRequest($"attachment by Id : {id} is not exist.");
+        var attachmentsWithBase64 = mapper.Map<AttachmentWithBase64DTO>(attachment);
+        return Ok(attachmentsWithBase64);
+    }
+
 }
